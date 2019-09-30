@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 MARGIN = 30
-SCREEN_TITLE = "Bullet exercise"
+SCREEN_TITLE = "Penguinicide!!!"
 
 NUM_ENEMIES = 5
 STARTING_LOCATION = (400,100)
@@ -69,7 +69,7 @@ class Window(arcade.Window):
         os.chdir(file_path)
 
         self.set_mouse_visible(True)
-        arcade.set_background_color(open_color.blue_4)
+        arcade.set_background_color(open_color.black)
         self.bullet_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
         self.player = Player()
@@ -88,12 +88,16 @@ class Window(arcade.Window):
     def update(self, delta_time):
         self.bullet_list.update()
         for e in self.enemy_list:
-            # check for collision
-            # for every bullet that hits, decrease the hp and then see if it dies
-            # increase the score
-            # e.kill() will remove the enemy sprite from the game
-            # the pass statement is a placeholder. Remove line 81 when you add your code
-            pass
+           if e.collides_with_list(self.bullet_list):
+                removal_list = e.collides_with_list(self.bullet_list)
+                for r in removal_list:
+                    r.kill()
+                e.hp = e.hp - BULLET_DAMAGE
+                self.score = self.score + 10
+                if e.hp <= 0:
+                    e.kill()
+                    self.score = self.score + 100 # check for collision
+            
 
     def on_draw(self):
         arcade.start_render()
@@ -110,9 +114,10 @@ class Window(arcade.Window):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
-            #fire a bullet
-            #the pass statement is a placeholder. Remove line 97 when you add your code
-            pass
+           x = self.player.center_x
+           y = self.player.center_y + 15
+           bullet = Bullet((x,y),(0,10),BULLET_DAMAGE)
+           self.bullet_list.append(bullet)
 
 def main():
     window = Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
